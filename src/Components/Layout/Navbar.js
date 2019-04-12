@@ -44,7 +44,7 @@ const styles = theme => ({
 
 function Navbar({ classes }) {
   return (
-    <div className={classes.navbar}>
+    <nav className={classes.navbar}>
       <img src={logo} alt="logo" />
       <div className={classes.navbarItems}>
         <NavLink
@@ -70,7 +70,7 @@ function Navbar({ classes }) {
           Calculadora
         </NavLink>
       </div>
-    </div>
+    </nav>
   );
 }
 

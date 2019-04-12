@@ -16,13 +16,15 @@ class App extends Component {
       <div className="App">
         <CssBaseline />
         <Navbar />
-        <React.Suspense fallback={<Loading />}>
-          <Switch>
-            <Route path="/equipo" component={Equipo} />
-            <Route path="/" exact component={Calculadora} />
-            <Route path="/MDRLC" component={MDRLC} />
-          </Switch>
-        </React.Suspense>
+        <div style={{ position: "relative" }}>
+          <React.Suspense fallback={<Loading />}>
+            <Switch>
+              <Route path="/equipo" component={Equipo} />
+              <Route path="/" exact component={Calculadora} />
+              <Route path="/MDRLC" component={MDRLC} />
+            </Switch>
+          </React.Suspense>
+        </div>
       </div>
     );
   }
