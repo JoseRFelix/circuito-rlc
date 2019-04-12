@@ -58,6 +58,7 @@ function Calculadora({ classes }) {
       >
         <div className={classes.row}>
           <TextValidator
+            type="number"
             label="Resistencia (R)"
             onChange={event =>
               setFormData({ ...formData, resistencia: event.target.value })
@@ -71,6 +72,7 @@ function Calculadora({ classes }) {
             ]}
           />
           <TextValidator
+            type="number"
             label="Inductancia (L)"
             onChange={event =>
               setFormData({ ...formData, inductancia: event.target.value })
@@ -86,6 +88,7 @@ function Calculadora({ classes }) {
         </div>
         <div className={classes.row}>
           <TextValidator
+            type="number"
             label="Capacitancia (C)"
             onChange={event =>
               setFormData({ ...formData, capacitancia: event.target.value })
@@ -99,6 +102,7 @@ function Calculadora({ classes }) {
             ]}
           />
           <TextValidator
+            type="number"
             label="Voltaje (E(t))"
             onChange={event =>
               setFormData({ ...formData, voltaje: event.target.value })
