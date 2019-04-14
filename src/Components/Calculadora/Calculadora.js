@@ -161,7 +161,7 @@ function submit(
       L: eval(formData.inductancia),
       R: eval(formData.resistencia),
       C: eval(formData.capacitancia),
-      V: eval(formData.voltaje),
+      V: formData.voltaje,
       t0: eval(formData.t0),
       t1: eval(formData.t1),
       q0: eval(formData.q0),
@@ -172,7 +172,7 @@ function submit(
       L: eval(formData.inductancia),
       R: eval(formData.resistencia),
       C: eval(formData.capacitancia),
-      V: eval(formData.voltaje)
+      V: formData.voltaje
     };
   }
 
