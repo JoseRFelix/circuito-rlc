@@ -25,25 +25,64 @@ let Loading = ({ classes }) => (
 
 Loading = withStyles(loadingStyles)(Loading);
 
-const Result = ({ result }) => {
+const resultStyles = {
+  root: {
+    "& h3": {
+      fontWeight: "bold"
+    }
+  }
+};
+
+let Result = ({ result, classes }) => {
   return (
-    <div>
+    <div className={classes.root}>
       <Typography variant="h6">Solución:</Typography>
-      <Typography variant="subtitle1">Carga con constantes:</Typography>
+      {result.mensaje ? result.mensaje : null}
+      <Typography variant="subtitle1" component="h3">
+        Carga con constantes:
+      </Typography>
       <BlockMath>{result.carga_constantes}</BlockMath>
-      <Typography variant="subtitle1">Corriente con constantes:</Typography>
+      <Typography variant="subtitle1" component="h3">
+        Corriente con constantes:
+      </Typography>
       <BlockMath>{result.corriente_constantes}</BlockMath>
-      <Typography variant="subtitle1">Carga:</Typography>
-      <BlockMath>{result.carga}</BlockMath>
-      <Typography variant="subtitle1">Corriente:</Typography>
-      <BlockMath>{result.corriente}</BlockMath>
-      <Typography variant="subtitle1">Forma alterna con Coseno:</Typography>
-      <BlockMath>{result.solucion_alterna_cos}</BlockMath>
-      <Typography variant="subtitle1">Forma alterna con Seno:</Typography>
-      <BlockMath>{result.solucion_alterna_sen}</BlockMath>
+      {!result.carga.includes("None") ? (
+        <div>
+          <Typography variant="subtitle1" component="h3">
+            Carga:
+          </Typography>
+          <BlockMath>{result.carga}</BlockMath>
+        </div>
+      ) : null}
+      {!result.corriente.includes("None") ? (
+        <div>
+          <Typography variant="subtitle1" component="h3">
+            Corriente:
+          </Typography>
+          <BlockMath>{result.corriente}</BlockMath>
+        </div>
+      ) : null}
+      {!result.solucion_alterna_cos.includes("None") ? (
+        <div>
+          <Typography variant="subtitle1" component="h3">
+            Forma alterna con Coseno:
+          </Typography>
+          <BlockMath>{result.solucion_alterna_cos}</BlockMath>
+        </div>
+      ) : null}
+      {!result.solucion_alterna_sen ? (
+        <div>
+          <Typography variant="subtitle1" component="h3">
+            Forma alterna con Seno:
+          </Typography>
+          <BlockMath>{result.solucion_alterna_sen}</BlockMath>
+        </div>
+      ) : null}
     </div>
   );
 };
+
+Result = withStyles(resultStyles)(Result);
 
 const styles = theme => ({
   paper: {

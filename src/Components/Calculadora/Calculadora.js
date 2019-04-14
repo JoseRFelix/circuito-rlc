@@ -7,7 +7,6 @@ import RLCCircuit from "../../image/RLCCircuit.png";
 import RLCFormula from "../../image/RLCFormula.png";
 import Paper from "@material-ui/core/Paper";
 import "katex/dist/katex.min.css";
-import "./Calculadora.css";
 import { BlockMath } from "react-katex";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
@@ -44,7 +43,10 @@ const styles = theme => ({
     bottom: "2rem",
     right: "2rem",
     padding: "2rem 4rem",
-    zIndex: 10
+    zIndex: 10,
+    "& .katex": {
+      fontSize: "3rem"
+    }
   },
   title: {
     fontFamily: "Playfair Display",
@@ -103,6 +105,15 @@ const styles = theme => ({
       transform: "translateX(-50%)",
       left: "50%"
     }
+  },
+  row2: {
+    display: "flex",
+    flexWrap: "wrap",
+    "& > *:not(:last-child)": {
+      marginRight: "2rem"
+    },
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 
@@ -146,7 +157,8 @@ function submit(
         carga: response.data.charge,
         corriente: response.data.current,
         solucion_alterna_cos: response.data.alternate_solution_cos,
-        solucion_alterna_sen: response.data.alternate_solution_sin
+        solucion_alterna_sen: response.data.alternate_solution_sin,
+        mensaje: response.data.message
       });
     })
     .catch(err => {
@@ -172,7 +184,8 @@ function Calculadora({ classes, enqueueSnackbar }) {
     carga: "",
     corriente: "",
     solucion_alterna_cos: "",
-    solucion_alterna_sen: ""
+    solucion_alterna_sen: "",
+    mensaje: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -225,19 +238,21 @@ function Calculadora({ classes, enqueueSnackbar }) {
         onError={errors => console.log(errors)}
       >
         <div className={classes.row}>
-          <TextValidator
-            label="Inductancia (L)"
-            onChange={event =>
-              setFormData({ ...formData, inductancia: event.target.value })
-            }
-            name="inductancia"
-            value={formData.inductancia}
-            validators={["required", "isFloat"]}
-            errorMessages={[
-              "Este campo es obligatorio",
-              "Introduzca un número o decimal"
-            ]}
-          />
+          <p>
+            <TextValidator
+              label="Inductancia (L)"
+              onChange={event =>
+                setFormData({ ...formData, inductancia: event.target.value })
+              }
+              name="inductancia"
+              value={formData.inductancia}
+              validators={["required", "isFloat"]}
+              errorMessages={[
+                "Este campo es obligatorio",
+                "Introduzca un número o decimal"
+              ]}
+            />
+          </p>
           <TextValidator
             label="Resistencia (R)"
             onChange={event =>
