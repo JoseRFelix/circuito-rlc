@@ -29,6 +29,14 @@ const initialFormData = {
   i0: ""
 };
 
+const initialResult = {
+  carga_constantes: "",
+  corriente_constantes: "",
+  carga: "",
+  corriente: "",
+  mensaje: ""
+};
+
 const styles = theme => ({
   root: {
     fontSize: "1.4rem",
@@ -75,7 +83,7 @@ const styles = theme => ({
     display: "flex",
     flexWrap: "wrap",
     "& > *:not(:last-child)": {
-      marginRight: "6rem"
+      marginRight: "4rem"
     },
     justifyContent: "center",
     alignItems: "center",
@@ -112,6 +120,25 @@ const styles = theme => ({
     "& > *:not(:last-child)": {
       marginRight: "2rem"
     },
+    "& > *:last-child": {
+      marginTop: "3.5rem"
+    },
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  unit: {
+    fontWeight: "bold"
+  },
+  row3: {
+    display: "flex",
+    flexWrap: "wrap",
+    "& > *:not(:last-child)": {
+      marginRight: "1rem"
+    },
+    "& > *:last-child": {
+      marginTop: "0.5rem",
+      marginRight: "1rem"
+    },
     justifyContent: "center",
     alignItems: "center"
   }
@@ -125,25 +152,27 @@ function submit(
   enqueueSnackbar
 ) {
   setLoading(true);
+  setResult(initialResult);
   setDisplayResult(true);
 
   let data = {};
   if (formData.t0 && formData.t1 && formData.q0 && formData.i0) {
     data = {
-      L: formData.inductancia,
-      R: formData.resistencia,
-      C: formData.capacitancia,
-      V: formData.voltaje,
-      t0: formData.t0,
-      t1: formData.t1,
-      q0: formData.q0,
-      i0: formData.i0
+      L: eval(formData.inductancia),
+      R: eval(formData.resistencia),
+      C: eval(formData.capacitancia),
+      V: eval(formData.voltaje),
+      t0: eval(formData.t0),
+      t1: eval(formData.t1),
+      q0: eval(formData.q0),
+      i0: eval(formData.i0)
     };
   } else {
     data = {
-      L: formData.inductancia,
-      R: formData.resistencia,
-      C: formData.capacitancia
+      L: eval(formData.inductancia),
+      R: eval(formData.resistencia),
+      C: eval(formData.capacitancia),
+      V: eval(formData.voltaje)
     };
   }
 
@@ -156,8 +185,6 @@ function submit(
         corriente_constantes: response.data.current_with_constants,
         carga: response.data.charge,
         corriente: response.data.current,
-        solucion_alterna_cos: response.data.alternate_solution_cos,
-        solucion_alterna_sen: response.data.alternate_solution_sin,
         mensaje: response.data.message
       });
     })
@@ -167,27 +194,20 @@ function submit(
           variant: "error"
         });
       } else {
-        err.response.data === 400
-          ? enqueueSnackbar("Ingreso de datos incorrecto", { variant: "error" })
+        err.response.status === 400
+          ? enqueueSnackbar("Revisar datos, especialmente Voltaje", {
+              variant: "error"
+            })
           : enqueueSnackbar("Error al calcular", { variant: "error" });
       }
+      setDisplayResult(false);
       setLoading(false);
     });
 }
 
 function Calculadora({ classes, enqueueSnackbar }) {
   const [formData, setFormData] = useState(initialFormData);
-
-  const [result, setResult] = useState({
-    carga_constantes: "",
-    corriente_constantes: "",
-    carga: "",
-    corriente: "",
-    solucion_alterna_cos: "",
-    solucion_alterna_sen: "",
-    mensaje: ""
-  });
-
+  const [result, setResult] = useState(initialResult);
   const [loading, setLoading] = useState(false);
   const [displayResult, setDisplayResult] = useState(false);
 
@@ -238,7 +258,7 @@ function Calculadora({ classes, enqueueSnackbar }) {
         onError={errors => console.log(errors)}
       >
         <div className={classes.row}>
-          <p>
+          <div className={classes.row2}>
             <TextValidator
               label="Inductancia (L)"
               onChange={event =>
@@ -246,58 +266,76 @@ function Calculadora({ classes, enqueueSnackbar }) {
               }
               name="inductancia"
               value={formData.inductancia}
-              validators={["required", "isFloat"]}
+              validators={["required"]}
               errorMessages={[
                 "Este campo es obligatorio",
                 "Introduzca un número o decimal"
               ]}
             />
-          </p>
-          <TextValidator
-            label="Resistencia (R)"
-            onChange={event =>
-              setFormData({ ...formData, resistencia: event.target.value })
-            }
-            name="resistencia"
-            value={formData.resistencia}
-            validators={["required", "isFloat"]}
-            errorMessages={[
-              "Este campo es obligatorio",
-              "Introduzca un número o decimal"
-            ]}
-          />
+            <Typography variant="subtitle1" className={classes.unit}>
+              H
+            </Typography>
+          </div>
+          <div className={classes.row2}>
+            <TextValidator
+              label="Resistencia (R)"
+              onChange={event =>
+                setFormData({ ...formData, resistencia: event.target.value })
+              }
+              name="resistencia"
+              value={formData.resistencia}
+              validators={["required"]}
+              errorMessages={[
+                "Este campo es obligatorio",
+                "Introduzca un número o decimal"
+              ]}
+            />
+            <Typography variant="subtitle1" className={classes.unit}>
+              Ω
+            </Typography>
+          </div>
         </div>
         <div className={classes.row}>
-          <TextValidator
-            label="Capacitancia (C)"
-            onChange={event =>
-              setFormData({ ...formData, capacitancia: event.target.value })
-            }
-            name="capacitancia"
-            value={formData.capacitancia}
-            validators={["required", "isFloat"]}
-            errorMessages={[
-              "Este campo es obligatorio",
-              "Introduzca un número o decimal"
-            ]}
-          />
-          <TextValidator
-            label="Voltaje (E(t))"
-            onChange={event =>
-              setFormData({ ...formData, voltaje: event.target.value })
-            }
-            name="voltaje"
-            value={formData.voltaje}
-            validators={["required"]}
-            errorMessages={[
-              "Este campo es obligatorio",
-              "Introduzca un número o decimal"
-            ]}
-          />
+          <div className={classes.row2}>
+            <TextValidator
+              label="Capacitancia (C)"
+              onChange={event =>
+                setFormData({ ...formData, capacitancia: event.target.value })
+              }
+              name="capacitancia"
+              value={formData.capacitancia}
+              validators={["required"]}
+              errorMessages={[
+                "Este campo es obligatorio",
+                "Introduzca un número o decimal"
+              ]}
+            />
+            <Typography variant="subtitle1" className={classes.unit}>
+              F
+            </Typography>
+          </div>
+          <div className={classes.row2}>
+            <TextValidator
+              label="Voltaje (E(t))"
+              onChange={event =>
+                setFormData({ ...formData, voltaje: event.target.value })
+              }
+              name="voltaje"
+              value={formData.voltaje}
+              validators={["required"]}
+              errorMessages={[
+                "Este campo es obligatorio",
+                "Introduzca un número o decimal"
+              ]}
+            />
+            <Typography variant="subtitle1" className={classes.unit}>
+              V
+            </Typography>
+          </div>
         </div>
         <OptionsExpansionPanel>
-          <div>
-            <div className={classes.column}>
+          <div className={classes.column}>
+            <div className={classes.row3}>
               <TextValidator
                 className={classes.input}
                 label="Tiempo 1 (t0)"
@@ -309,6 +347,11 @@ function Calculadora({ classes, enqueueSnackbar }) {
                 validators={["isFloat"]}
                 errorMessages={["Introduzca un número o decimal"]}
               />
+              <Typography variant="subtitle1" className={classes.unit}>
+                s
+              </Typography>
+            </div>
+            <div className={classes.row3}>
               <TextValidator
                 className={classes.input}
                 label="Carga (q0)"
@@ -320,8 +363,13 @@ function Calculadora({ classes, enqueueSnackbar }) {
                 validators={["isFloat"]}
                 errorMessages={["Introduzca un número o decimal"]}
               />
+              <Typography variant="subtitle1" className={classes.unit}>
+                C
+              </Typography>
             </div>
-            <div className={classes.column}>
+          </div>
+          <div className={classes.column}>
+            <div className={classes.row3}>
               <TextValidator
                 className={classes.input}
                 label="Tiempo 2 (t1)"
@@ -333,6 +381,11 @@ function Calculadora({ classes, enqueueSnackbar }) {
                 validators={["isFloat"]}
                 errorMessages={["Introduzca un número o decimal"]}
               />
+              <Typography variant="subtitle1" className={classes.unit}>
+                s
+              </Typography>
+            </div>
+            <div className={classes.row3}>
               <TextValidator
                 className={classes.input}
                 label="Corriente (i0)"
@@ -344,6 +397,9 @@ function Calculadora({ classes, enqueueSnackbar }) {
                 validators={["isFloat"]}
                 errorMessages={["Introduzca un número o decimal"]}
               />
+              <Typography variant="subtitle1" className={classes.unit}>
+                A
+              </Typography>
             </div>
           </div>
         </OptionsExpansionPanel>

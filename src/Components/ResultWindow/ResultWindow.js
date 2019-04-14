@@ -10,7 +10,10 @@ const loadingStyles = {
   root: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
+    "& > p": {
+      marginTop: "2rem"
+    }
   }
 };
 
@@ -37,7 +40,9 @@ let Result = ({ result, classes }) => {
   return (
     <div className={classes.root}>
       <Typography variant="h6">Solución:</Typography>
-      {result.mensaje ? result.mensaje : null}
+      {result.mensaje
+        ? "*Nuestros sistemas no pudieron confirmar la respuesta*"
+        : null}
       <Typography variant="subtitle1" component="h3">
         Carga con constantes:
       </Typography>
@@ -60,22 +65,6 @@ let Result = ({ result, classes }) => {
             Corriente:
           </Typography>
           <BlockMath>{result.corriente}</BlockMath>
-        </div>
-      ) : null}
-      {!result.solucion_alterna_cos.includes("None") ? (
-        <div>
-          <Typography variant="subtitle1" component="h3">
-            Forma alterna con Coseno:
-          </Typography>
-          <BlockMath>{result.solucion_alterna_cos}</BlockMath>
-        </div>
-      ) : null}
-      {!result.solucion_alterna_sen ? (
-        <div>
-          <Typography variant="subtitle1" component="h3">
-            Forma alterna con Seno:
-          </Typography>
-          <BlockMath>{result.solucion_alterna_sen}</BlockMath>
         </div>
       ) : null}
     </div>
