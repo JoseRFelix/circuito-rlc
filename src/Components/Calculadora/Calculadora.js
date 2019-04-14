@@ -11,11 +11,24 @@ import "./Calculadora.css";
 import { BlockMath } from "react-katex";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
+import ResultWindow from "../ResultWindow/ResultWindow";
+import { withSnackbar } from "notistack";
 
 const baseUrl =
   process.env.NODE_ENV === "development"
     ? "http://localhost:8000"
     : process.env.REACT_APP_API_URL;
+
+const initialFormData = {
+  resistencia: "",
+  inductancia: "",
+  capacitancia: "",
+  voltaje: "",
+  t0: "",
+  t1: "",
+  q0: "",
+  i0: ""
+};
 
 const styles = theme => ({
   root: {
@@ -30,7 +43,8 @@ const styles = theme => ({
     position: "fixed",
     bottom: "2rem",
     right: "2rem",
-    padding: "2rem 4rem"
+    padding: "2rem 4rem",
+    zIndex: 10
   },
   title: {
     fontFamily: "Playfair Display",
@@ -82,7 +96,7 @@ const styles = theme => ({
     fontSize: "1.4rem",
     lineHeight: "2.5rem",
     letterSpacing: "0.15rem",
-    marginTop: "8rem",
+    marginTop: "1rem",
     position: "relative",
     "& > img": {
       position: "absolute",
@@ -92,14 +106,23 @@ const styles = theme => ({
   }
 });
 
-function submit(formData) {
-  console.log(formData);
+function submit(
+  formData,
+  setResult,
+  setLoading,
+  setDisplayResult,
+  enqueueSnackbar
+) {
+  setLoading(true);
+  setDisplayResult(true);
+
   let data = {};
   if (formData.t0 && formData.t1 && formData.q0 && formData.i0) {
     data = {
       L: formData.inductancia,
       R: formData.resistencia,
       C: formData.capacitancia,
+      V: formData.voltaje,
       t0: formData.t0,
       t1: formData.t1,
       q0: formData.q0,
@@ -112,27 +135,48 @@ function submit(formData) {
       C: formData.capacitancia
     };
   }
+
   axios
     .post(`${baseUrl}/calculateODE`, data)
     .then(response => {
-      console.log(response);
+      setLoading(false);
+      setResult({
+        carga_constantes: response.data.charge_with_constants,
+        corriente_constantes: response.data.current_with_constants,
+        carga: response.data.charge,
+        corriente: response.data.current,
+        solucion_alterna_cos: response.data.alternate_solution_cos,
+        solucion_alterna_sen: response.data.alternate_solution_sin
+      });
     })
     .catch(err => {
-      console.log(err);
+      if (!err.response) {
+        enqueueSnackbar("No se pudo conectar con el servidor", {
+          variant: "error"
+        });
+      } else {
+        err.response.data === 400
+          ? enqueueSnackbar("Ingreso de datos incorrecto", { variant: "error" })
+          : enqueueSnackbar("Error al calcular", { variant: "error" });
+      }
+      setLoading(false);
     });
 }
 
-function Calculadora({ classes }) {
-  const [formData, setFormData] = useState({
-    resistencia: "",
-    inductancia: "",
-    capacitancia: "",
-    voltaje: "",
-    t0: "",
-    t1: "",
-    q0: "",
-    i0: ""
+function Calculadora({ classes, enqueueSnackbar }) {
+  const [formData, setFormData] = useState(initialFormData);
+
+  const [result, setResult] = useState({
+    carga_constantes: "",
+    corriente_constantes: "",
+    carga: "",
+    corriente: "",
+    solucion_alterna_cos: "",
+    solucion_alterna_sen: ""
   });
+
+  const [loading, setLoading] = useState(false);
+  const [displayResult, setDisplayResult] = useState(false);
 
   return (
     <main className={classes.root}>
@@ -140,51 +184,47 @@ function Calculadora({ classes }) {
       {(formData.resistencia ||
         formData.inductancia ||
         formData.capacitancia ||
-        formData.voltaje) && (
-        <Paper className={classes.formulaPreview}>
-          <Typography variant="h6" component="h4">
-            Prevista de la fórmula:
-          </Typography>
-          <BlockMath
-            math={`${
-              formData.inductancia ? formData.inductancia : "L"
-            }\\frac{d^2q}{dt^2}+${
-              formData.resistencia ? formData.resistencia : "R"
-            }\\frac{dq}{dt}+\\frac{1}{${
-              formData.capacitancia ? formData.capacitancia : "C"
-            }}q = ${formData.voltaje ? formData.voltaje : "E(t)"}`}
-          />
-          <Typography variant="subtitle1" component="h4">
-            Condiciones iniciales:
-          </Typography>
-          <BlockMath
-            math={`q(${formData.t0 ? formData.t0 : "t"}) = ${
-              formData.q0 ? formData.q0 : "q0"
-            }, i(${formData.t1 ? formData.t1 : "t"}) = ${
-              formData.i0 ? formData.i0 : "i0"
-            }`}
-          />
-        </Paper>
-      )}
+        formData.voltaje) &&
+        !displayResult && (
+          <Paper className={classes.formulaPreview}>
+            <Typography variant="h6" component="h4">
+              Prevista de la fórmula:
+            </Typography>
+            <BlockMath
+              math={`${
+                formData.inductancia ? formData.inductancia : "L"
+              }\\frac{d^2q}{dt^2}+${
+                formData.resistencia ? formData.resistencia : "R"
+              }\\frac{dq}{dt}+\\frac{1}{${
+                formData.capacitancia ? formData.capacitancia : "C"
+              }}q = ${formData.voltaje ? formData.voltaje : "E(t)"}`}
+            />
+            <Typography variant="subtitle1" component="h4">
+              Condiciones iniciales:
+            </Typography>
+            <BlockMath
+              math={`q(${formData.t0 ? formData.t0 : "t"}) = ${
+                formData.q0 ? formData.q0 : "q0"
+              }, i(${formData.t1 ? formData.t1 : "t"}) = ${
+                formData.i0 ? formData.i0 : "i0"
+              }`}
+            />
+          </Paper>
+        )}
       <ValidatorForm
-        onSubmit={() => submit(formData, setFormData)}
+        onSubmit={() =>
+          submit(
+            formData,
+            setResult,
+            setLoading,
+            setDisplayResult,
+            enqueueSnackbar
+          )
+        }
         className={classes.form}
         onError={errors => console.log(errors)}
       >
         <div className={classes.row}>
-          <TextValidator
-            label="Resistencia (R)"
-            onChange={event =>
-              setFormData({ ...formData, resistencia: event.target.value })
-            }
-            name="resistencia"
-            value={formData.resistencia}
-            validators={["required", "isFloat"]}
-            errorMessages={[
-              "Este campo es obligatorio",
-              "Introduzca un número o decimal"
-            ]}
-          />
           <TextValidator
             label="Inductancia (L)"
             onChange={event =>
@@ -192,6 +232,19 @@ function Calculadora({ classes }) {
             }
             name="inductancia"
             value={formData.inductancia}
+            validators={["required", "isFloat"]}
+            errorMessages={[
+              "Este campo es obligatorio",
+              "Introduzca un número o decimal"
+            ]}
+          />
+          <TextValidator
+            label="Resistencia (R)"
+            onChange={event =>
+              setFormData({ ...formData, resistencia: event.target.value })
+            }
+            name="resistencia"
+            value={formData.resistencia}
             validators={["required", "isFloat"]}
             errorMessages={[
               "Este campo es obligatorio",
@@ -232,7 +285,7 @@ function Calculadora({ classes }) {
             <div className={classes.column}>
               <TextValidator
                 className={classes.input}
-                label="tiempo 1 (t0)"
+                label="Tiempo 1 (t0)"
                 onChange={event =>
                   setFormData({ ...formData, t0: event.target.value })
                 }
@@ -256,7 +309,7 @@ function Calculadora({ classes }) {
             <div className={classes.column}>
               <TextValidator
                 className={classes.input}
-                label="tiempo 2 (t1)"
+                label="Tiempo 2 (t1)"
                 onChange={event =>
                   setFormData({ ...formData, t1: event.target.value })
                 }
@@ -289,6 +342,13 @@ function Calculadora({ classes }) {
           Calcular
         </Button>
       </ValidatorForm>
+      {displayResult && (
+        <ResultWindow
+          className={classes.resultWindow}
+          loading={loading}
+          result={result}
+        />
+      )}
       <div className={classes.row1}>
         <img
           src={RLCCircuit}
@@ -317,4 +377,6 @@ function Calculadora({ classes }) {
   );
 }
 
-export default withStyles(styles)(Calculadora);
+const CalculadoraWrapped = withStyles(styles)(Calculadora);
+
+export default withSnackbar(CalculadoraWrapped);
