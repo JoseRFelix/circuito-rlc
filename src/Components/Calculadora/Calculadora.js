@@ -34,7 +34,8 @@ const initialResult = {
   corriente_constantes: "",
   carga: "",
   corriente: "",
-  mensaje: ""
+  mensaje: "",
+  grafico: ""
 };
 
 const styles = theme => ({
@@ -185,7 +186,8 @@ function submit(
         corriente_constantes: response.data.current_with_constants,
         carga: response.data.charge,
         corriente: response.data.current,
-        mensaje: response.data.message
+        mensaje: response.data.message,
+        grafico: response.data.graph
       });
     })
     .catch(err => {

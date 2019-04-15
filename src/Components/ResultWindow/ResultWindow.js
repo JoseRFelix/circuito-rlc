@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import classnames from "classnames";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import { BlockMath } from "react-katex";
+import Button from "@material-ui/core/Button";
+import axios from "axios";
+
+const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8000"
+    : process.env.REACT_APP_API_URL;
 
 const loadingStyles = {
   root: {
@@ -28,15 +35,45 @@ let Loading = ({ classes }) => (
 
 Loading = withStyles(loadingStyles)(Loading);
 
+const fetchGraph = (graphId, setGraph) => {
+  axios
+    .post(
+      `${baseUrl}/graph`,
+      { graph: graphId },
+      { responseType: "arraybuffer" }
+    )
+    .then(response => {
+      const base64 = btoa(
+        new Uint8Array(response.data).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ""
+        )
+      );
+      setGraph("data:;base64," + base64);
+    });
+};
+
 const resultStyles = {
   root: {
     "& h3": {
       fontWeight: "bold"
-    }
+    },
+    display: "flex",
+    flexDirection: "column"
+  },
+  button: {
+    marginTop: "1rem"
+  },
+  image: {
+    alignSelf: "center",
+    marginTop: "1rem",
+    backgroundSize: "cover"
   }
 };
 
 let Result = ({ result, classes }) => {
+  const [graph, setGraph] = useState("");
+
   return (
     <div className={classes.root}>
       <Typography variant="h6">Solución:</Typography>
@@ -67,6 +104,22 @@ let Result = ({ result, classes }) => {
           <BlockMath>{result.corriente}</BlockMath>
         </div>
       ) : null}
+      {!result.grafico.includes("None") && !graph && (
+        <Button
+          onClick={() => fetchGraph(result.grafico, setGraph)}
+          className={classes.button}
+          variant="outlined"
+          color="primary"
+        >
+          Mostrar gráfico
+        </Button>
+      )}
+      {graph && (
+        <Typography variant="subtitle1" component="h3">
+          Gráfico:
+        </Typography>
+      )}
+      {graph && <img className={classes.image} src={graph} alt="Gráfico" />}
     </div>
   );
 };
