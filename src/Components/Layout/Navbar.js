@@ -54,13 +54,13 @@ function Navbar({ classes }) {
         >
           Más de RLC
         </NavLink>
-        <NavLink
+        {/*<NavLink
           className={classes.navbarLinks}
           activeClassName={classes.active}
           to="/equipo"
         >
           Equipo
-        </NavLink>
+        </NavLink>*/}
         <NavLink
           className={classes.navbarLinks}
           activeClassName={classes.active}

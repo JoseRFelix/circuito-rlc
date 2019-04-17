@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import circuito1 from "../../image/circuito1.png";
 import circuito2 from "../../image/circuito2.png";
 import circuito3 from "../../image/circuito3.png";
+import circuito4 from "../../image/circuito4.jpg";
 import Divider from "@material-ui/core/Divider";
 import { BlockMath, InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
@@ -77,6 +78,7 @@ const navigationStyles = theme => ({
   root: {
     position: "sticky",
     top: 0,
+    zIndex: 9999,
     padding: "4rem 10rem",
     display: "flex",
     alignItems: "center",
@@ -125,21 +127,21 @@ let Navigation = ({ classes }) => (
         </Typography>
       </a>
       <div className={classes.textDivider}>&nbsp;</div>
-      <a className={classes.link} href="#aplicaciones">
-        <Typography variant="subtitle1" component="p">
-          Aplicaciones
-        </Typography>
-      </a>
-      <div className={classes.textDivider}>&nbsp;</div>
       <a className={classes.link} href="#demostracion">
         <Typography variant="subtitle1" component="p">
           Demostración
         </Typography>
       </a>
       <div className={classes.textDivider}>&nbsp;</div>
-      <a className={classes.link} href="#informe">
+      <a className={classes.link} href="#aplicacion">
         <Typography variant="subtitle1" component="p">
-          Informe
+          Aplicaciones
+        </Typography>
+      </a>
+      <div className={classes.textDivider}>&nbsp;</div>
+      <a className={classes.link} href="#referencias">
+        <Typography variant="subtitle1" component="p">
+          Referencias
         </Typography>
       </a>
     </div>
@@ -206,6 +208,16 @@ const styles = theme => ({
     width: "42rem",
     backgroundColor: theme.palette.primary.main,
     marginBottom: "8rem"
+  },
+  list: {
+    listStyleType: "circle",
+    "& > li:not(:last-child)": {
+      marginBottom: "2rem"
+    },
+    "& > li": {
+      fontSize: "1.4rem",
+      letterSpacing: "0.10rem"
+    }
   }
 });
 
@@ -292,13 +304,7 @@ function MDRLC({ classes }) {
             </div>
             <div className={classes.row1}>
               <Typography variant="subtitle1" component="p">
-                Teniendo que...
-              </Typography>
-              <BlockMath math={`I = \\frac{dQ}{dt}`} />
-            </div>
-            <div className={classes.row1}>
-              <Typography variant="subtitle1" component="p">
-                Y por ley de Kirchoff
+                Teniendo que por ley de Kirchoff
               </Typography>
               <BlockMath
                 math={`\\sum_{k=1}^{n}V_{k}=V_{1}+V_{2}+V_{3} + ... + V_{n} = 0`}
@@ -306,15 +312,82 @@ function MDRLC({ classes }) {
             </div>
             <div className={classes.row1}>
               <Typography variant="subtitle1" component="p">
+                Por lo que
+              </Typography>
+              <BlockMath math={`V-L\\frac{dI}{dt}- R*I-\\frac{Q}{C}=0`} />
+            </div>
+            <div className={classes.row1}>
+              <Typography variant="subtitle1" component="p">
                 Tomando en cuenta que <InlineMath math={`I = \\frac{dQ}{dt}`} />
               </Typography>
               <BlockMath
-                math={`L \\frac{d^2Q}{dt^2}+R\\frac{dQ}{dt}+\\frac{Q}{C}= E(t)`}
+                math={`L \\frac{d^2Q}{dt^2}+R\\frac{dQ}{dt}+\\frac{Q}{C}= V`}
               />
             </div>
           </div>
         </div>
         <Divider variant="middle" className={classes.divider} />
+        <div className={classes.row}>
+          <div>
+            <Typography
+              id="aplicacion"
+              className={classes.subtitle}
+              variant="h5"
+            >
+              Aplicaciones
+            </Typography>
+            <Typography variant="subtitle1" component="p">
+              El circuito en serie LCR también se conoce como circuito
+              sintonizado o aceptador. Tienen muchas aplicaciones,
+              particularmente para circuitos oscilantes. El circuito en serie
+              LCR tiene aplicaciones en radio e ingeniería de comunicación. Se
+              pueden usar para seleccionar un cierto rango estrecho de
+              frecuencias del espectro total de las ondas de radio ambientales.
+              Por ejemplo, la radio AM / FM con sintonizadores analógicos usa un
+              circuito RLC para sintonizar una frecuencia de radio.
+            </Typography>
+          </div>
+          <img src={circuito4} alt="circuito 4" />
+        </div>
+        <Divider variant="middle" className={classes.divider} />
+        <div className={classes.row}>
+          <div>
+            <Typography
+              id="referencias"
+              className={classes.subtitle}
+              variant="h5"
+            >
+              Referencias
+            </Typography>
+            <ul className={classes.list}>
+              <li>
+                Agarwal, Anant; Lang, Jeffrey H. (2005). Foundations of Analog
+                and Digital Electronic Circuits. Morgan Kaufmann.
+              </li>
+              <li>
+                Falstad, (2016). RLC Circuit. Recuperado de:
+                <a
+                  href="http://www.falstad.com/circuit/e-lrc.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  http://www.falstad.com/circuit/e-lrc.html
+                </a>
+              </li>
+              <li>
+                Amarita, (2016).Series LCR circuits. recuperado de:
+                <a
+                  href="https://vlab.amrita.edu/?sub=1&brch=75&sim=330&cnt=1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {" "}
+                  https://vlab.amrita.edu/?sub=1&brch=75&sim=330&cnt=1
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </section>
     </main>
   );

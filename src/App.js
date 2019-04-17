@@ -4,7 +4,7 @@ import Navbar from "./Components/Layout/Navbar";
 import { Route, Switch } from "react-router-dom";
 import Loading from "./Components/Layout/Loading";
 
-const Equipo = React.lazy(() => import("./Components/Equipo/Equipo"));
+//const Equipo = React.lazy(() => import("./Components/Equipo/Equipo"));
 const Calculadora = React.lazy(() =>
   import("./Components/Calculadora/Calculadora")
 );
@@ -19,7 +19,7 @@ class App extends Component {
         <div style={{ position: "relative" }}>
           <React.Suspense fallback={<Loading />}>
             <Switch>
-              <Route path="/equipo" component={Equipo} />
+              {/*<Route path="/equipo" component={Equipo} />*/}
               <Route path="/" exact component={Calculadora} />
               <Route path="/MDRLC" component={MDRLC} />
             </Switch>
