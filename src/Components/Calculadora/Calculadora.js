@@ -159,20 +159,20 @@ function submit(
   let data = {};
   if (formData.t0 && formData.t1 && formData.q0 && formData.i0) {
     data = {
-      L: eval(formData.inductancia),
-      R: eval(formData.resistencia),
-      C: eval(formData.capacitancia),
+      L: formData.inductancia,
+      R: formData.resistencia,
+      C: formData.capacitancia,
       V: formData.voltaje,
-      t0: eval(formData.t0),
-      t1: eval(formData.t1),
-      q0: eval(formData.q0),
-      i0: eval(formData.i0)
+      t0: formData.t0,
+      t1: formData.t1,
+      q0: formData.q0,
+      i0: formData.i0
     };
   } else {
     data = {
-      L: eval(formData.inductancia),
-      R: eval(formData.resistencia),
-      C: eval(formData.capacitancia),
+      L: formData.inductancia,
+      R: formData.resistencia,
+      C: formData.capacitancia,
       V: formData.voltaje
     };
   }
@@ -268,7 +268,7 @@ function Calculadora({ classes, enqueueSnackbar }) {
               }
               name="inductancia"
               value={formData.inductancia}
-              validators={["required"]}
+              validators={["required", "isFloat"]}
               errorMessages={[
                 "Este campo es obligatorio",
                 "Introduzca un número o decimal"
@@ -286,7 +286,7 @@ function Calculadora({ classes, enqueueSnackbar }) {
               }
               name="resistencia"
               value={formData.resistencia}
-              validators={["required"]}
+              validators={["required", "isFloat"]}
               errorMessages={[
                 "Este campo es obligatorio",
                 "Introduzca un número o decimal"
@@ -306,7 +306,7 @@ function Calculadora({ classes, enqueueSnackbar }) {
               }
               name="capacitancia"
               value={formData.capacitancia}
-              validators={["required"]}
+              validators={["required", "isFloat"]}
               errorMessages={[
                 "Este campo es obligatorio",
                 "Introduzca un número o decimal"
